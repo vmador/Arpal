@@ -1,41 +1,56 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Arpal Sounds</title>
-  
-  <!-- PWA Manifest -->
-  <link rel="manifest" href="manifest.json">
-  
-  <!-- Icons -->
-  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192x192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="/icon-512x512.png">
-  
-  <!-- iOS específico -->
-  <link rel="apple-touch-icon" sizes="180x180" href="/icon-192x192.png">
-  <link rel="apple-touch-icon" sizes="167x167" href="/icon-192x192.png">
-  <link rel="apple-touch-icon" sizes="152x152" href="/icon-192x192.png">
-  <link rel="apple-touch-icon" sizes="120x120" href="/icon-192x192.png">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Arpal">
-  
-  <!-- PWA Meta -->
-  <meta name="theme-color" content="#FFFFFF">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="Soundscapes and Meditations">
-
-  <style>
-    body, html { 
-      margin: 0; 
-      padding: 0; 
-      height: 100%; 
-      overflow: hidden; 
-      background-color: #000; 
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Arpal</title>
+    <meta name="description" content="Soundscapes and Meditations">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512x512.png">
+    <link rel="apple-touch-icon" href="/icon-192x192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Arpal">
+    <meta property="og:title" content="Arpal">
+    <meta property="og:description" content="Soundscapes and Meditations">
+    <meta property="og:image" content="/social-preview.png">
+    <meta property="og:url" content="https://arpalapp.framer.website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Arpal">
+    <meta name="twitter:description" content="Soundscapes and Meditations">
+    <meta name="twitter:image" content="/social-preview.png">
     
-    iframe { 
+    <style>
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            height: 100%; 
+            overflow: hidden; 
+            background-color: #000; 
+        }
+        iframe { 
+            width: 100lvw; 
+            height: 100dvh; 
+            border: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 0; 
+        }
+        
+        /* Safe Area Mode (Sone style) */
+        @supports(padding: max(0px)) {
+            body, iframe { 
+                padding-top: env(safe-area-inset-top); 
+                height: calc(100dvh - env(safe-area-inset-top)); 
+            }
+        }
+        
+        iframe { 
       width: 100lvw; 
       height: 100dvh; 
       border: none; 
@@ -51,7 +66,7 @@
       user-select: none;
     }
     
-    /* Para Safari (no PWA): usar viewport dinámico */
+    /* Para Safari (no PWA): usar viewport dinÃ¡mico */
     @supports (-webkit-touch-callout: none) {
       @media not all and (display-mode: standalone) {
         iframe {
@@ -71,555 +86,79 @@
         overflow: hidden !important;
       }
     }
-  </style>
-
-  <!-- OneSignal Script -->
-  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    </style>
 </head>
 <body>
-  <iframe 
-    id="framerContent" 
-    src="https://arpalapp.framer.website" 
-    allowfullscreen 
-    allow="geolocation; camera; microphone; storage-access; notifications"
-    sandbox="allow-same-origin allow-scripts allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox"
-  ></iframe>
-
-  <script>
-    // ============= DETECCIÓN PLATAFORMA =============
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    const iOSVersion = isIOS ? parseFloat((navigator.userAgent.match(/OS (\d+)_/) || [])[1]) : null;
-    const isStandalone = window.navigator.standalone === true;
-    const isIOSPWA = isIOS && isStandalone;
+    <iframe id="framerContent" src="https://arpalapp.framer.website/" allowfullscreen allow="geolocation; camera; microphone; storage-access"></iframe>
     
-    console.log('🚀 ARPAL V3 - iOS PWA Optimizado');
-    console.log('📱 Plataforma:', { isIOS, iOSVersion, isStandalone, isIOSPWA });
     
-    // ============= CONFIGURACIÓN ONESIGNAL =============
-    let oneSignalInitialized = false;
-    
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    window.OneSignalDeferred.push(function(OneSignal) {
-      console.log('📡 OneSignal SDK v16 cargando...');
-      
-      OneSignal.init({
-        appId: "49999010-fa62-443a-914d-7326000e6fb4",
-        safari_web_id: "web.onesignal.auto.1172fa5f-6e39-45ba-9a29-ceb4d8311220",
-        
-        // Service Worker configuración
-        serviceWorkerPath: '/OneSignalSDKWorker.js',
-        serviceWorkerUpdaterPath: '/OneSignalSDKWorker.js',
-        
-        // Configuración push
-        notifyButton: { enable: false },
-        allowLocalhostAsSecureOrigin: true,
-        
-        // iOS específico
-        autoRegister: isIOSPWA, // Auto register solo en iOS PWA
-        welcomeNotification: { disable: true },
-        persistNotification: true
-        
-      }).then(function() {
-        console.log('✅ OneSignal v16 inicializado');
-        oneSignalInitialized = true;
-        
-        // Log de capacidades disponibles
-        console.log('🔍 OneSignal capacidades:', {
-          Notifications: !!window.OneSignal.Notifications,
-          User: !!window.OneSignal.User,
-          login: typeof window.OneSignal.login,
-          platform: isIOSPWA ? 'iOS PWA' : isIOS ? 'iOS Safari' : 'Other'
-        });
-        
-        // Evento de listo
-        window.dispatchEvent(new CustomEvent('oneSignalReady'));
-        
-      }).catch(function(error) {
-        console.error('❌ Error OneSignal init:', error);
-      });
-    });
-
-    // ============= FUNCIONES PUSH NOTIFICATIONS =============
-    
-    async function checkPushNotificationStatus() {
-      console.log('🔍 Verificando estado push notifications...');
-      
-      if (!oneSignalInitialized || !window.OneSignal) {
-        console.log('⚠️ OneSignal no listo');
-        return false;
-      }
-      
-      try {
-        // Método 1: API nativa (más confiable)
-        if ('Notification' in window) {
-          const nativePermission = Notification.permission;
-          console.log('📊 Permiso nativo:', nativePermission);
-          
-          if (nativePermission === 'granted') {
-            return true;
-          }
-        }
-        
-        // Método 2: OneSignal API
-        if (window.OneSignal.Notifications && window.OneSignal.Notifications.permission) {
-          try {
-            const osPermission = await window.OneSignal.Notifications.permission;
-            console.log('📊 Permiso OneSignal:', osPermission);
-            return osPermission === 'granted';
-          } catch (e) {
-            console.log('⚠️ Error OneSignal permission check:', e);
-          }
-        }
-        
-        return false;
-        
-      } catch (error) {
-        console.error('❌ Error verificando push status:', error);
-        return false;
-      }
+    <script>
+    function sendMessageToIframe(message) {
+        const iframe = document.getElementById('framerContent');
+        iframe.contentWindow.postMessage(message, 'https://arpalapp.framer.website/');
     }
     
-    async function subscribeToPushNotifications(userId = null) {
-      console.log('📱 INICIANDO SUSCRIPCIÓN PUSH - Plataforma:', isIOSPWA ? 'iOS PWA' : 'Standard');
-      
-      if (!oneSignalInitialized || !window.OneSignal) {
-        console.error('❌ OneSignal no disponible');
-        return false;
-      }
-      
-      try {
-        // MÉTODO ESPECÍFICO PARA iOS PWA
-        if (isIOSPWA) {
-          return await subscribeIOSPWA(userId);
-        }
-        
-        // MÉTODO ESTÁNDAR para otras plataformas
-        return await subscribeStandard(userId);
-        
-      } catch (error) {
-        console.error('❌ Error durante suscripción:', error);
-        return false;
-      }
-    }
-    
-    // Suscripción específica iOS PWA
-    async function subscribeIOSPWA(userId) {
-      console.log('🍎 Suscripción iOS PWA iniciada...');
-      
-      try {
-        // Paso 1: Solicitar permiso nativo iOS
-        if (Notification.permission === 'default') {
-          console.log('🔔 Solicitando permiso nativo iOS...');
-          const permission = await Notification.requestPermission();
-          console.log('📋 Resultado iOS nativo:', permission);
-          
-          if (permission !== 'granted') {
-            console.log('❌ Permiso iOS denegado');
-            return false;
-          }
-        } else if (Notification.permission === 'granted') {
-          console.log('✅ Permiso iOS ya concedido');
-        } else {
-          console.log('❌ Permisos iOS bloqueados');
-          return false;
-        }
-        
-        // Paso 2: Configurar OneSignal para iOS
-        await configureArpalTags(userId, 'ios_pwa');
-        
-        // Paso 3: Notificación de prueba iOS
-        setTimeout(() => {
-          new Notification('🎉 Arpal Notifications', {
-            body: 'Notificaciones activadas en iOS!',
-            icon: '/icon-192x192.png',
-            badge: '/icon-192x192.png',
-            tag: 'arpal-ios-success',
-            requireInteraction: false
-          });
-        }, 1000);
-        
-        console.log('✅ iOS PWA suscripción exitosa');
-        return true;
-        
-      } catch (error) {
-        console.error('❌ Error iOS PWA subscription:', error);
-        return false;
-      }
-    }
-    
-    // Suscripción estándar
-    async function subscribeStandard(userId) {
-      console.log('🌐 Suscripción estándar iniciada...');
-      
-      try {
-        // Método 1: API nativa primero
-        if ('Notification' in window && Notification.permission === 'default') {
-          console.log('🔔 Solicitando permiso nativo...');
-          const permission = await Notification.requestPermission();
-          console.log('📋 Resultado nativo:', permission);
-          
-          if (permission === 'granted') {
-            await configureArpalTags(userId, 'standard');
-            return true;
-          }
-        }
-        
-        // Método 2: OneSignal API
-        if (window.OneSignal.Notifications && window.OneSignal.Notifications.requestPermission) {
-          console.log('🎯 Usando OneSignal requestPermission...');
-          const result = await window.OneSignal.Notifications.requestPermission();
-          console.log('📋 Resultado OneSignal:', result);
-          
-          if (result) {
-            await configureArpalTags(userId, 'onesignal');
-            return true;
-          }
-        }
-        
-        return false;
-        
-      } catch (error) {
-        console.error('❌ Error standard subscription:', error);
-        return false;
-      }
-    }
-    
-    // Configurar tags y usuario
-    async function configureArpalTags(userId, method) {
-      console.log('🏷️ Configurando tags Arpal...', method);
-      
-      try {
-        const tags = {
-          'app': 'arpal_sounds',
-          'subscription_date': new Date().toISOString(),
-          'language': 'es',
-          'platform': 'web',
-          'method': method,
-          'device': isIOSPWA ? 'ios_pwa' : isIOS ? 'ios_safari' : 'other'
-        };
-        
-        if (iOSVersion) {
-          tags['ios_version'] = iOSVersion;
-        }
-        
-        // Configurar tags en OneSignal
-        if (window.OneSignal.User && window.OneSignal.User.addTags) {
-          await window.OneSignal.User.addTags(tags);
-          console.log('✅ Tags configurados:', tags);
-        }
-        
-        // Configurar userId
-        if (userId && window.OneSignal.login) {
-          await window.OneSignal.login(userId.toString());
-          console.log('👤 Usuario logueado:', userId);
-        }
-        
-        console.log('🎊 Configuración Arpal completa');
-        
-      } catch (error) {
-        console.log('⚠️ Error configurando tags (no crítico):', error);
-      }
-    }
-    
-    async function setUserIdForNotifications(userId) {
-      console.log('👤 Configurando User ID:', userId);
-      
-      if (!oneSignalInitialized || !window.OneSignal || !userId) {
-        console.log('⚠️ OneSignal no listo o userId inválido');
-        return false;
-      }
-      
-      try {
-        if (window.OneSignal.login) {
-          await window.OneSignal.login(userId.toString());
-          console.log('✅ User ID configurado');
-          return true;
-        }
-        return false;
-      } catch (error) {
-        console.error('❌ Error configurando User ID:', error);
-        return false;
-      }
-    }
-
-    // ============= COMUNICACIÓN CON FRAMER =============
-    
-    const SESSION_KEY = 'arpal_session_data';
-    const iframe = document.getElementById('framerContent');
-    const targetOrigin = 'https://arpalapp.framer.website';
-
-    function sendMessageToFramer(message) {
-      if (iframe && iframe.contentWindow) {
-        console.log('📤 → Framer:', message.type);
-        iframe.contentWindow.postMessage(message, targetOrigin);
-      } else {
-        console.error('❌ No se pudo enviar mensaje a Framer');
-      }
-    }
-
-    // Escuchar mensajes de Framer
     window.addEventListener('message', function(event) {
-      if (event.origin !== targetOrigin) {
-        return;
-      }
-      
-      try {
-        if (event.data && event.data.type) {
-          console.log('📥 ← Framer:', event.data.type);
-          
-          switch(event.data.type) {
-            
-            // ===== GESTIÓN DE SESIÓN =====
-            case 'setSessionData':
-              if (event.data.sessionData) {
-                localStorage.setItem(SESSION_KEY, JSON.stringify(event.data.sessionData));
-                sessionStorage.setItem(SESSION_KEY, JSON.stringify(event.data.sessionData));
-              } else {
-                localStorage.removeItem(SESSION_KEY);
-                sessionStorage.removeItem(SESSION_KEY);
-              }
-              break;
-              
-            case 'getSessionData':
-              const sessionData = localStorage.getItem(SESSION_KEY);
-              sendMessageToFramer({
+        if (event.origin !== "https://arpalapp.framer.website/") return;
+        
+        if (event.data.type === 'setSessionData') {
+            localStorage.setItem('sessionData', JSON.stringify(event.data.sessionData));
+        } else if (event.data.type === 'getSessionData') {
+            const sessionData = localStorage.getItem('sessionData');
+            sendMessageToIframe({
                 type: 'sessionDataResponse',
                 sessionData: sessionData ? JSON.parse(sessionData) : null
-              });
-              break;
-              
-            case 'openPopup':
-              if (event.data.url) {
-                window.open(event.data.url, "_blank", "width=600,height=700");
-              }
-              break;
-
-            // ===== PUSH NOTIFICATIONS =====
-            case 'oneSignalIsPushEnabled':
-              console.log('🔍 SOLICITUD: Verificar estado push');
-              
-              checkPushNotificationStatus().then(result => {
-                console.log('📊 Estado push:', result);
-                sendMessageToFramer({
-                  type: 'oneSignalIsPushEnabledResponse',
-                  requestId: event.data.requestId,
-                  result: result
-                });
-              }).catch(error => {
-                console.error('❌ Error verificando estado:', error);
-                sendMessageToFramer({
-                  type: 'oneSignalIsPushEnabledResponse',
-                  requestId: event.data.requestId,
-                  result: false
-                });
-              });
-              break;
-
-            case 'oneSignalShowPrompt':
-              console.log('🎯 SOLICITUD: Suscribir push notifications');
-              console.log('👤 User ID:', event.data.userId);
-              
-              subscribeToPushNotifications(event.data.userId).then(result => {
-                console.log('📋 Resultado suscripción:', result);
-                sendMessageToFramer({
-                  type: 'oneSignalShowPromptResponse',
-                  requestId: event.data.requestId,
-                  result: result
-                });
-              }).catch(error => {
-                console.error('❌ Error suscripción:', error);
-                sendMessageToFramer({
-                  type: 'oneSignalShowPromptResponse',
-                  requestId: event.data.requestId,
-                  result: false
-                });
-              });
-              break;
-
-            case 'oneSignalSetUserId':
-              console.log('👤 SOLICITUD: Configurar User ID');
-              
-              setUserIdForNotifications(event.data.userId).then(result => {
-                sendMessageToFramer({
-                  type: 'oneSignalSetUserIdResponse',
-                  requestId: event.data.requestId,
-                  result: result
-                });
-              }).catch(error => {
-                console.error('❌ Error configurando User ID:', error);
-                sendMessageToFramer({
-                  type: 'oneSignalSetUserIdResponse',
-                  requestId: event.data.requestId,
-                  result: false
-                });
-              });
-              break;
-
-            default:
-              // Ignorar mensajes no reconocidos
-              break;
-          }
-        }
-      } catch (error) {
-        console.error('❌ Error procesando mensaje Framer:', error);
-      }
-    });
-
-    // ============= GESTIÓN DE SESIONES =============
-    
-    function restoreUserSession() {
-      try {
-        const sessionData = localStorage.getItem(SESSION_KEY);
-        if (sessionData) {
-          setTimeout(() => {
-            sendMessageToFramer({
-              type: 'restoreSession',
-              sessionData: JSON.parse(sessionData)
             });
-            console.log('✅ Sesión restaurada');
-          }, 2000);
         }
-      } catch (error) {
-        console.error('❌ Error restaurando sesión:', error);
-      }
-    }
+    }, false);
+
+    window.addEventListener('load', function() {
+        const sessionData = localStorage.getItem('sessionData');
+        if (sessionData) {
+            sendMessageToIframe({
+                type: 'restoreSession',
+                sessionData: JSON.parse(sessionData)
+            });
+        }
+    });
 
     document.addEventListener('visibilitychange', function() {
-      if (!document.hidden) {
-        restoreUserSession();
-      }
-    });
-
-    iframe.onload = function() { 
-      console.log('✅ Iframe Framer cargado');
-      restoreUserSession(); 
-    };
-
-    // ============= SERVICE WORKER =============
-    
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/service-worker.js')
-          .then(function(registration) {
-            console.log('✅ Service Worker registrado:', registration.scope);
-          })
-          .catch(function(err) {
-            console.log('⚠️ Service Worker error:', err);
-          });
-      });
-    }
-
-    // ============= VIEWPORT DINÁMICO =============
-    
-    function updateViewportHeight() {
-      const height = window.innerHeight + 'px';
-      document.documentElement.style.setProperty('--dvh', height);
-    }
-
-    updateViewportHeight();
-    window.addEventListener('resize', updateViewportHeight);
-    window.addEventListener('orientationchange', function() {
-      setTimeout(updateViewportHeight, 100);
-    });
-
-    // ============= DEBUGGING ESPECÍFICO iOS =============
-    
-    window.debugArpalPush = function() {
-      console.log('🔍 ARPAL PUSH DEBUG:');
-      console.log('📱 Plataforma:', {
-        isIOS,
-        iOSVersion,
-        isStandalone,
-        isIOSPWA,
-        userAgent: navigator.userAgent
-      });
-      
-      console.log('🔔 Notificaciones:', {
-        nativeAPI: 'Notification' in window,
-        permission: Notification?.permission,
-        oneSignalLoaded: !!window.OneSignal,
-        oneSignalInit: oneSignalInitialized
-      });
-      
-      if (window.OneSignal) {
-        console.log('📡 OneSignal:', {
-          Notifications: !!window.OneSignal.Notifications,
-          User: !!window.OneSignal.User,
-          login: typeof window.OneSignal.login
-        });
-      }
-      
-      // Service Workers
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(regs => {
-          console.log('⚙️ Service Workers:', regs.length);
-          regs.forEach((reg, i) => {
-            console.log(`SW ${i}:`, {
-              scope: reg.scope,
-              script: reg.active?.scriptURL,
-              state: reg.active?.state
-            });
-          });
-        });
-      }
-      
-      // Test notification
-      if (Notification.permission === 'granted') {
-        new Notification('🧪 Arpal Debug Test', {
-          body: 'Test desde función debug',
-          icon: '/icon-192x192.png',
-          tag: 'debug-test'
-        });
-        console.log('📬 Notificación de prueba enviada');
-      } else {
-        console.log('⚠️ No hay permisos para test notification');
-      }
-    };
-    
-    window.testArpalPushNotifications = function() {
-      console.log('🧪 TEST MANUAL: Push notifications...');
-      subscribeToPushNotifications('test_user_' + Date.now()).then(result => {
-        console.log('🧪 RESULTADO TEST:', result ? '✅ ÉXITO' : '❌ FALLO');
-      });
-    };
-
-    // ============= INICIALIZACIÓN FINAL =============
-    
-    console.log('🚀 Arpal V3 PWA inicializado');
-    console.log('💡 Comandos debug disponibles:');
-    console.log('   - window.debugArpalPush() // Debug completo');
-    console.log('   - window.testArpalPushNotifications() // Test manual');
-    
-    // Auto-debug en iOS para facilitar troubleshooting
-    if (isIOSPWA) {
-      console.log('🍎 iOS PWA detectado - Auto-debug en 3 segundos...');
-      setTimeout(() => {
-        window.debugArpalPush();
-      }, 3000);
-    }
-    
-    // Monitoreo de estado
-    let statusCount = 0;
-    const monitor = setInterval(() => {
-      statusCount++;
-      console.log(`📊 [${statusCount}/6] Estado:`, {
-        oneSignalLoaded: !!window.OneSignal,
-        oneSignalInit: oneSignalInitialized,
-        platform: isIOSPWA ? 'iOS PWA' : isIOS ? 'iOS Safari' : 'Other'
-      });
-      
-      if (statusCount >= 6) {
-        clearInterval(monitor);
-        console.log('🏁 Monitoreo inicial completado');
-        
-        if (oneSignalInitialized) {
-          console.log('🎉 Arpal V3 completamente listo para push notifications!');
-        } else {
-          console.log('⚠️ OneSignal aún no listo - revisar configuración');
+        if (!document.hidden) {
+            const sessionData = localStorage.getItem('sessionData');
+            if (sessionData) {
+                sendMessageToIframe({
+                    type: 'restoreSession',
+                    sessionData: JSON.parse(sessionData)
+                });
+            }
         }
-      }
-    }, 3000);
+    });
+
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+                // Registration successful
+            }, function(err) {
+                // Registration failed
+            });
+        });
+    }
+
     
-  </script>
+    // Dynamic viewport adjustment for dvh units
+    function updateViewportHeight() {
+        document.documentElement.style.setProperty('--dvh', window.innerHeight + 'px');
+    }
+
+    if ('dvh' === 'dvh') {
+        // Set initial value
+        updateViewportHeight();
+        
+        // Update on resize or orientation change
+        window.addEventListener('resize', updateViewportHeight);
+        window.addEventListener('orientationchange', updateViewportHeight);
+    }
+    
+    </script>
 </body>
 </html>
