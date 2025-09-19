@@ -1,4 +1,4 @@
-const CACHE_NAME = 'arpal-pwa-cache-v2';
+const CACHE_NAME = 'Arpal-pwa-cache-v2';
 const urlsToCache = [
     '/',
     '/index.html',
